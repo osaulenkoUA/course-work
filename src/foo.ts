@@ -2,7 +2,10 @@ interface IOption {
     text: string;
     nextId: number;
     state?: string;
-    requiredState?: string;
+    requiredState?: {
+        subject:string;
+        isForDelete?:boolean;
+    }
 }
 
 interface IGameState {
@@ -37,6 +40,13 @@ const gameStates: IGameState[] = [
         ],
     },
     {
+        id: 201,
+        text: `Вітаю Ви Виграли!!!! `,
+        options: [
+            {text: "Зіграти ще раз?", nextId: 0},
+        ],
+    },
+    {
         id: 1,
         text: `
     Супер! Ви вибрали собі предмет, тепер можемо починати подорож.Ви стоїте на перехресті, де виходять три стежки. 
@@ -64,7 +74,7 @@ const gameStates: IGameState[] = [
            Приходячи до берега, ви бачите, як річка повільно пливе своїм широким руслом. Ви помічаєте невеликий човен, що висить біля берега.`,
         options: [
             {text: "Використати човен і переплисти річку", nextId: 6},
-            {text: "Продовжите йти вздовж берега", nextId: 7},
+            {text: "Продовжите йти вздовж берега", nextId: 7,state: 'rope'},
         ],
     },
     {
@@ -101,7 +111,7 @@ const gameStates: IGameState[] = [
     },
     {
         id: 7,
-        text: `Продовжуючи свій шлях вздовж гірського потоку, ви замічаєте, як стежка поступово розширюється, а зелені дерева змінюються на високі скелі. 
+        text: `Продовжуючи свій шлях вздовж гірського потоку,ви знаходите мотузку і вирішуєте підібрати, далі стежка поступово розширюється, а зелені дерева змінюються на високі скелі. 
     Ви наближаєтеся до водоспаду, що злітає з високої кручі.
     Тепер ви знаходитеся перед важливим вибором:`,
         options: [
@@ -143,7 +153,7 @@ const gameStates: IGameState[] = [
                 Ви, перебуваючи на вершині гори, маєте можливість спостерігати навколишній ландшафт. 
                 Якщо у вас є бінокль, ви можете скористатися ним, щоб роздивитися найближчі об'єкти, зокрема вихід з лісу`,
         options: [
-            {text: "Так, десь тут є він, скористаюся мабуть", nextId: 19, requiredState: 'binoculars'},
+            {text: "Так, десь тут є він, скористаюся мабуть", nextId: 19, requiredState: {subject:'binoculars'} },
             {text: "Та ні, я маю орлиний зір, і так побачу", nextId: 20},
         ],
     },
@@ -172,7 +182,7 @@ const gameStates: IGameState[] = [
     Але, ось незворотний момент: ви розумієте, що маючи мотузку, якою можна б було зафіксуватися, можна врятуватися і подолати скелю.
      Вам спливають руки від поту, і ви відчуваєте, як втрачаєте стійкість. Серце б'ється швидше, а паніка поступово охоплює вас.`,
         options: [
-            {text: "Використати мотузку", nextId: 31, requiredState: 'rope'},
+            {text: "Використати мотузку", nextId: 31, requiredState:{subject:'rope',isForDelete:true}},
             {text: "І де ж я подів мотузку...", nextId: 101},//----------------START OVER--------------
 
         ],
@@ -213,7 +223,7 @@ const gameStates: IGameState[] = [
         Ведмідь наближається до вас, його великі лапи потрясають землю. Ви відчуваєте пульсуючий страх у своєму серці, але одночасно відчуваєте рішучість.
             Знаючи, що ведмеді часто пристрастіюються до меду, а чи присутній мед зі мною? `,
         options: [
-            {text: "Так! Я маю баночку меду, пригощу звіра", nextId: 30, requiredState: 'honey'},  // required state Honey should be
+            {text: "Так! Я маю баночку меду, пригощу звіра", nextId: 30, requiredState: {subject:'honey',isForDelete:true}},  // required state Honey should be
             {text: "Хм...Я наче мав взяти його...}", nextId: 101},  // КІНЕЦЬ
         ],
     },
@@ -311,11 +321,11 @@ const gameStates: IGameState[] = [
          `,
         options: [
             {text: "Побачили вдалині міст та вирішили перейти на іншу сторону", nextId: 41},
-            {text: "Використати ніж, щоб зловити рибу та підкріпитися", nextId: 42, requiredState: 'knife'},
+            {text: "Використати ніж, щоб зловити рибу та підкріпитися", nextId: 42, requiredState:{subject: 'knife'}},
             {
                 text: "Використати кресало, щоб розвести багаття, може хтось помітить і допоможе",
                 nextId: 43,
-                requiredState: 'kresalo'
+                requiredState: {subject: 'kresalo'}
             },
             {text: "Продовжити рухатися вздовж берега", nextId: 44},
 
@@ -368,18 +378,7 @@ const gameStates: IGameState[] = [
          Але якщо у вас нічого коштовного немає, розбійники вирішують утримати вас в полоні. 
          Ви знаходитесь під їхнім контролем і не можете втекти.`,
         options: [
-            {text: "Віддати кришталевий кулон", nextId: 46,requiredState: 'crystal'},
-            {text: "Якщо щось і є, я надійно сховав і не віддам", nextId: 47},
-        ],
-    },
-    {
-        id: 46,
-        text: `Ви опинилися на галявині і раптово зустріли розбійників. Вони загрожують вам, вимагаючи від вас цінні речі.
-         Якщо у вас є щось коштовне, вони погоджуються відвезти вас до найближчого міста, а ваші речі забрати собі. Ваше життя буде врятовано, але ви втратите цінні власності.
-         Але якщо у вас нічого коштовного немає, розбійники вирішують утримати вас в полоні. 
-         Ви знаходитесь під їхнім контролем і не можете втекти.`,
-        options: [
-            {text: "Віддати кришталевий кулон", nextId: 46,requiredState: 'crystal'},
+            {text: "Віддати кришталевий кулон", nextId: 46,requiredState: {subject:'crystal',isForDelete:true}},
             {text: "Якщо щось і є, я надійно сховав і не віддам", nextId: 47},
         ],
     },
@@ -429,8 +428,14 @@ function startGame() {
 
 function showOption(option: IOption): boolean {
     if (!option?.requiredState) return true
+    const subject = option.requiredState.subject;
     // @ts-ignore
-    return initialState.includes(option?.requiredState)//TODO revove used subject from state
+    const hasSubject = initialState.includes(subject);
+    if (hasSubject && option?.requiredState?.isForDelete) {
+        // @ts-ignore
+        initialState = initialState.filter(el => el !== subject) || [];
+    }
+    return hasSubject
 }
 
 // Function to display the current game state
@@ -454,7 +459,6 @@ function showGameState(state: IGameState): void {
 // Function to handle option selection
 function selectOption(option: IOption): void {
     const nextState = findStateById(option.nextId)
-    console.log(nextState)
     // @ts-ignore
     option?.state && initialState.push(option?.state)
 
