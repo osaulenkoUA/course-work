@@ -613,7 +613,25 @@ interface IGameState {
   options: IOption[];
 }
 
-let initialState: [] = [];
+class Bag {
+  public objects: [] | string[] = [];
+
+  addToBag(val: string): void {
+    // @ts-ignore
+    this.objects.push(val);
+  }
+  removeFromBag(val: string): void {
+    // @ts-ignore
+    this.objects = this.objects.filter((el) => el !== val) || [];
+  }
+
+  hasInBag(sub: string): boolean {
+    // @ts-ignore
+    return this.objects.includes(sub);
+  }
+}
+
+const bag = new Bag();
 
 const findStateById = (id: number): IGameState => {
   for (const state of gameStates) {
@@ -626,26 +644,24 @@ const findStateById = (id: number): IGameState => {
 
 // Function to start the game
 function startGame() {
-  initialState = [];
   const state = findStateById(0);
   showGameState(state);
 }
 
 function showOption(option: IOption): boolean {
   if (!option?.requiredState) return true;
+
   const subject = option.requiredState.subject;
-  // @ts-ignore
-  const hasSubject = initialState.includes(subject);
+  const hasSubject = bag.hasInBag(subject);
+
   if (hasSubject && option?.requiredState?.isForDelete) {
-    // @ts-ignore
-    initialState = initialState.filter((el) => el !== subject) || [];
+    bag.removeFromBag(subject);
   }
   return hasSubject;
 }
 
 // Function to display the current game state
 function showGameState(state: IGameState): void {
-  console.log(initialState);
   const textElement = document.getElementById("text");
   const optionsElement = document.getElementById("options");
 
@@ -666,8 +682,7 @@ function showGameState(state: IGameState): void {
 function selectOption(option: IOption): void {
   const nextState = findStateById(option.nextId);
 
-  // @ts-ignore
-  option?.state && initialState.push(option?.state);
+  option?.state && bag.addToBag(option?.state);
 
   if (nextState) {
     showGameState(nextState);
