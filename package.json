@@ -11,7 +11,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc src/foo.ts"
+    "start": "tsc src/foo.ts",
+    "start2": "tsc src/boo.ts"
   },
   "repository": {
     "type": "git",

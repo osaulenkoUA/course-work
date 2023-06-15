@@ -613,7 +613,7 @@ interface IGameState {
   options: IOption[];
 }
 
-class Bag {
+class Bag2 {
   public objects: [] | string[] = [];
 
   addToBag(val: string): void {
