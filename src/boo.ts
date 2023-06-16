@@ -649,12 +649,8 @@ class GameModel {
   }
 
   findStateById(id: number): IGameState {
-    for (const state of this.gameStates) {
-      if (state.id === id) {
-        return state;
-      }
-    }
-    return this.gameStates[0];
+    const state = this.gameStates.find((el) => el.id === id);
+    return state || this.gameStates[0];
   }
 
   showOption(option: IOption): boolean {
