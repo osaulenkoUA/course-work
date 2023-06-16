@@ -621,26 +621,27 @@ interface IGameView {
   clearOptions(): void;
 }
 class Bag {
-  public objects: [] | string[] = [];
+  private objects: Set<string>;
+
+  constructor() {
+    this.objects = new Set();
+  }
 
   addToBag(val: string): void {
-    // @ts-ignore
-    this.objects.push(val);
+    this.objects.add(val);
   }
   removeFromBag(val: string): void {
-    // @ts-ignore
-    this.objects = this.objects.filter((el) => el !== val) || [];
+    this.objects.delete(val);
   }
 
   hasInBag(sub: string): boolean {
-    // @ts-ignore
-    return this.objects.includes(sub);
+    return this.objects.has(sub);
   }
 }
 
 class GameModel {
-  private bag: Bag;
-  private gameStates: IGameState[];
+  private readonly bag: Bag;
+  private readonly gameStates: IGameState[];
 
   constructor(gameStates: IGameState[]) {
     this.bag = new Bag();
@@ -657,6 +658,7 @@ class GameModel {
   }
 
   showOption(option: IOption): boolean {
+    console.log(this.bag);
     if (!option?.requiredState) return true;
 
     const subject = option.requiredState.subject;
@@ -712,8 +714,8 @@ class GamePresenter {
 }
 
 class GameView implements IGameView {
-  private textElement: HTMLElement | null;
-  private optionsElement: HTMLElement | null;
+  private readonly textElement: HTMLElement | null;
+  private readonly optionsElement: HTMLElement | null;
 
   constructor() {
     this.textElement = document.getElementById("text");
